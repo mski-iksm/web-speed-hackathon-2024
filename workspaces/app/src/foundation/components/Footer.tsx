@@ -7,7 +7,6 @@ import { COMPANY } from '../constants/Company';
 import { CONTACT } from '../constants/Contact';
 import { OVERVIEW } from '../constants/Overview';
 import { QUESTION } from '../constants/Question';
-import { TERM } from '../constants/Term';
 import { Color, Space, Typography } from '../styles/variables';
 
 import { Box } from './Box';
@@ -39,7 +38,7 @@ export const Footer: React.FC = () => {
 
   const updateDialogContent = useSetAtom(DialogContentAtom);
 
-  const handleRequestToTermDialogOpen = () => {
+  const handleRequestToTermDialogOpen = async () => {
     updateDialogContent(
       <_Content aria-labelledby={termDialogA11yId} role="dialog">
         <Text as="h2" color={Color.MONO_100} id={termDialogA11yId} typography={Typography.NORMAL16}>
@@ -47,7 +46,21 @@ export const Footer: React.FC = () => {
         </Text>
         <Spacer height={Space * 1} />
         <Text as="p" color={Color.MONO_100} typography={Typography.NORMAL12}>
-          {TERM}
+          読み込み中...
+        </Text>
+      </_Content>,
+    );
+    
+    // Lazy load the large term content
+    const termModule = await import('../constants/Term');
+    updateDialogContent(
+      <_Content aria-labelledby={termDialogA11yId} role="dialog">
+        <Text as="h2" color={Color.MONO_100} id={termDialogA11yId} typography={Typography.NORMAL16}>
+          利用規約
+        </Text>
+        <Spacer height={Space * 1} />
+        <Text as="p" color={Color.MONO_100} typography={Typography.NORMAL12}>
+          {termModule.TERM}
         </Text>
       </_Content>,
     );

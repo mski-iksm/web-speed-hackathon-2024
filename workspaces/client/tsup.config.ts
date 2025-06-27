@@ -36,6 +36,8 @@ export default defineConfig(async (): Promise<Options[]> => {
           global: 'globalThis',
         };
         options.publicPath = '/';
+        // Code splitting optimization
+        options.chunkNames = 'chunk-[hash]';
       },
       // 実はここも不要説
       esbuildPlugins: [

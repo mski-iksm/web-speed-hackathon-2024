@@ -14,7 +14,7 @@ import { releaseApp } from './releases';
 
 const app = new OpenAPIHono();
 
-app.doc31('/api/v1/specification', {
+app.doc('/api/v1/specification', {
   info: {
     title: 'API Docs',
     version: '1.0.0',

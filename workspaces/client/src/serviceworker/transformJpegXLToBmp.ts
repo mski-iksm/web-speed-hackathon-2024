@@ -8,7 +8,6 @@ let decoderInstance: any = null;
 export async function transformJpegXLToBmp(response: Response): Promise<Response> {
   if (!decoderInstance) {
     decoderInstance = await jsquashInit(undefined, {
-      locateFile: () => {},
       wasmBinary: jsquashWasmBinary,
     });
   }
