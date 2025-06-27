@@ -1,23 +1,25 @@
 // @ts-expect-error - This is a workaround for the missing type definition
 import jsquashWasmBinary from '@jsquash/jxl/codec/dec/jxl_dec.wasm';
 import { init as jsquashInit } from '@jsquash/jxl/decode';
-import 'jimp';
+import encodeWebP from '@jsquash/webp/encode';
 
-declare const Jimp: typeof import('jimp');
+let decoderInstance: any = null;
 
 export async function transformJpegXLToBmp(response: Response): Promise<Response> {
-  const { decode } = await jsquashInit(undefined, {
-    locateFile: () => {},
-    wasmBinary: jsquashWasmBinary,
-  });
+  if (!decoderInstance) {
+    decoderInstance = await jsquashInit(undefined, {
+      locateFile: () => {},
+      wasmBinary: jsquashWasmBinary,
+    });
+  }
 
-  const imageData = decode(await response.arrayBuffer())!;
-  const bmpBinary = await new Jimp(imageData).getBufferAsync(Jimp.MIME_BMP);
+  const imageData = decoderInstance.decode(await response.arrayBuffer())!;
+  const webpBinary = await encodeWebP(imageData, { quality: 80 });
 
-  return new Response(bmpBinary, {
+  return new Response(webpBinary, {
     headers: {
-      'Cache-Control': 'no-store',
-      'Content-Type': 'image/bmp',
+      'Cache-Control': 'public, max-age=31536000',
+      'Content-Type': 'image/webp',
     },
   });
 }

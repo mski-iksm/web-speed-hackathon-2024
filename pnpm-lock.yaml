@@ -157,6 +157,9 @@ importers:
       '@jsquash/jxl':
         specifier: 1.1.0
         version: 1.1.0
+      '@jsquash/webp':
+        specifier: 1.5.0
+        version: 1.5.0
       '@wsh-2024/admin':
         specifier: workspace:*
         version: link:../admin
@@ -3183,6 +3186,12 @@ packages:
     resolution: {integrity: sha512-atdg3ZOOhmK3A87gRRS1mTBp+ljVK0rYaAVAhnrv7GhKTPFDZKo+GkLsXMu5oAka43Wi9iBOXFJeq+xtD1z57w==}
     dependencies:
       wasm-feature-detect: 1.6.1
+
+  /@jsquash/webp@1.5.0:
+    resolution: {integrity: sha512-KggLoj2MnRSfIqTeKe1EmbljTX2vuV7mh79k89PCL1pyqiDULcPM1L47twxXt0hkb68F70bXiL31MxsuoZtKFw==}
+    dependencies:
+      wasm-feature-detect: 1.6.1
+    dev: false
 
   /@mui/base@5.0.0-beta.31(@types/react@18.2.0)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-+uNbP3OHJuZVI00WyMg7xfLZotaEY7LgvYXDfONVJbrS+K9wyjCIPNfjy8r9XJn4fbHo/5ibiZqjWnU9LMNv+A==}
