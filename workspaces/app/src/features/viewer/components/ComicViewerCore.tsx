@@ -1,5 +1,4 @@
-import { Suspense, useEffect, useState } from 'react';
-import { useInterval, useUpdate } from 'react-use';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import { addUnitIfNeeded } from '../../../lib/css/addUnitIfNeeded';
@@ -99,29 +98,57 @@ type Props = {
 };
 
 const ComicViewerCore: React.FC<Props> = ({ episodeId }) => {
-  // 画面のリサイズに合わせて再描画する
-  const rerender = useUpdate();
-  useInterval(rerender, 0);
-
   const { data: episode } = useEpisode({ params: { episodeId } });
 
   const [container, containerRef] = useState<HTMLDivElement | null>(null);
   const [scrollView, scrollViewRef] = useState<HTMLDivElement | null>(null);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
   // コンテナの幅
-  const cqw = (container?.getBoundingClientRect().width ?? 0) / 100;
+  const cqw = containerSize.width / 100;
   // コンテナの高さ
-  const cqh = (container?.getBoundingClientRect().height ?? 0) / 100;
+  const cqh = containerSize.height / 100;
 
   // 1画面に表示できるページ数（1 or 2）
-  const pageCountParView = (100 * cqw) / (100 * cqh) < (2 * IMAGE_WIDTH) / IMAGE_HEIGHT ? 1 : 2;
+  const pageCountParView = useMemo(() => 
+    (100 * cqw) / (100 * cqh) < (2 * IMAGE_WIDTH) / IMAGE_HEIGHT ? 1 : 2,
+    [cqw, cqh]
+  );
+  
   // ページの幅
-  const pageWidth = ((100 * cqh) / IMAGE_HEIGHT) * IMAGE_WIDTH;
+  const pageWidth = useMemo(() => 
+    ((100 * cqh) / IMAGE_HEIGHT) * IMAGE_WIDTH,
+    [cqh]
+  );
+  
   // 画面にページを表示したときに余る左右の余白
-  const viewerPaddingInline =
+  const viewerPaddingInline = useMemo(() =>
     (100 * cqw - pageWidth * pageCountParView) / 2 +
     // 2ページ表示のときは、奇数ページが左側にあるべきなので、ページの最初と最後に1ページの余白をいれる
-    (pageCountParView === 2 ? pageWidth : 0);
+    (pageCountParView === 2 ? pageWidth : 0),
+    [cqw, pageWidth, pageCountParView]
+  );
+
+  // ResizeObserver for container size updates
+  useEffect(() => {
+    if (!container) return;
+    
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        setContainerSize({
+          width: entry.contentRect.width,
+          height: entry.contentRect.height,
+        });
+      }
+    });
+    
+    resizeObserver.observe(container);
+    
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [container]);
 
   useEffect(() => {
     const abortController = new AbortController();
